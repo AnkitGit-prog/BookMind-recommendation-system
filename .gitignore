@@ -1,0 +1,40 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ─── Large Model Files (Git LFS recommended) ───────────────────
+# Ye files bahut badi hain — Git LFS use karo ya locally rakhna
+model/books copy.pkl
+model/pt copy.pkl
+model/similarity_scores copy.pkl
+
+# Agar chote pkl files bhi skip karne hain:
+# model/*.pkl
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="AI-powered book recommendations using the Book-Crossing dataset. Find your next great read instantly." />
+  <title>BookMind — AI Book Recommender</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <!-- Ambient blobs -->
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
+  <div class="blob blob-3" aria-hidden="true"></div>
+
+  <!-- ── NAVBAR ─────────────────────────────────────────── -->
+  <header class="navbar">
+    <div class="nav-inner">
+      <a href="/" class="logo" aria-label="BookMind home">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" stroke-width="2"/>
+          <path d="M9 7h7M9 11h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="logo-text">Book<span class="logo-accent">Mind</span></span>
+      </a>
+      <nav class="nav-links">
+        <a href="#search-section" class="nav-link">Search</a>
+        <a href="#popular-section" class="nav-link">Popular</a>
+        <a href="#about-section" class="nav-link">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- ── HERO ───────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="hero-content">
+        <span class="hero-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+          AI-Powered · 271,360 Real Books · Book-Crossing Dataset
+        </span>
+
+        <h1 class="hero-title">
+          Discover Your<br/>
+          <span class="gradient-text">Next Great Read</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Enter a book you love and our AI finds 5 books you'll love next —
+          trained on real reader ratings from the Book-Crossing dataset.
+        </p>
+
+        <!-- ── SEARCH ── -->
+        <div id="search-section" class="search-wrapper" role="search">
+          <div class="search-box-container">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <input
+              id="book-input"
+              type="text"
+              class="search-input"
+              placeholder="Enter a book you love…"
+              autocomplete="off"
+              aria-label="Book name"
+              aria-autocomplete="list"
+              aria-controls="autocomplete-list"
+            />
+            <button id="clear-btn" class="clear-btn" aria-label="Clear" hidden>
+              <svg viewBox="0 0 24 24" fill="none">
+                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <ul id="autocomplete-list" class="autocomplete-list" role="listbox" hidden></ul>
+          </div>
+
+          <button id="recommend-btn" class="recommend-btn">
+            <span class="btn-text">Recommend</span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="btn-spinner" hidden>
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="60" stroke-dashoffset="20"/></svg>
+            </span>
+          </button>
+        </div>
+
+        <!-- Quick chips — diverse picks from popular.pkl -->
+        <div class="chip-row">
+          <span class="chip-label">Try:</span>
+          {% set chip_indices = [2, 9, 10, 14, 21] %}
+          {% for i in chip_indices %}
+          {% if popular[i] is defined %}
+          <button class="chip" data-title="{{ popular[i].title }}">{{ popular[i].title | truncate(24, True, '…') }}</button>
+          {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ERROR BANNER ──────────────────────────────────── -->
+    <div id="error-banner" class="error-banner" role="alert" hidden>
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <line x1="12" y1="16" x2="12.01" y2="16" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+      </svg>
+      <span id="error-message"></span>
+    </div>
+
+    <!-- ── RESULTS ──────────────────────────────────────── -->
+    <section id="results-section" class="results-section" aria-live="polite" hidden>
+      <div class="results-header">
+        <div>
+          <h2 class="results-title">Recommended For You</h2>
+          <p id="results-subtitle" class="results-subtitle"></p>
+        </div>
+        <span id="results-count" class="results-count"></span>
+      </div>
+      <div id="results-grid" class="results-grid" role="list"></div>
+    </section>
+
+    <!-- ── POPULAR BOOKS (real data from popular.pkl) ───── -->
+    {% if popular %}
+    <section id="popular-section" class="popular-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+          </svg>
+          Popular Books
+        </h2>
+        <p class="section-subtitle">Most-rated books from the Book-Crossing dataset · Click to get recommendations</p>
+      </div>
+
+      <div class="popular-grid">
+        {% for book in popular %}
+        <article class="pop-card" data-title="{{ book.title }}" role="button" tabindex="0" aria-label="Recommend similar to {{ book.title }}">
+          <div class="pop-card-img-wrap">
+            <img
+              class="pop-card-img"
+              src="{{ book.image }}"
+              alt="Cover of {{ book.title }}"
+              loading="lazy"
+              onerror="this.style.display='none';this.nextElementSibling.style.opacity='0.5'"
+            />
+            <div class="pop-card-fallback" aria-hidden="true">📖</div>
+          </div>
+          <div class="pop-card-body">
+            <h3 class="pop-card-title">{{ book.title }}</h3>
+            <p class="pop-card-author">{{ book.author }}</p>
+            <div class="pop-card-meta">
+              <span class="pop-badge pop-badge-ratings">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                </svg>
+                {{ book.avg_rating }}
+              </span>
+              <span class="pop-badge pop-badge-count">{{ book.num_ratings }} ratings</span>
+            </div>
+          </div>
+          <div class="pop-card-hover-overlay">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Get Recommendations
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- ── ABOUT ──────────────────────────────────────────── -->
+    <section id="about-section" class="about-section">
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-icon">📚</div>
+          <h3>Real Dataset</h3>
+          <p>Trained on the <strong>Book-Crossing Dataset</strong> — 271,360 books &amp; over 1 million real reader ratings.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon">🤖</div>
+          <h3>Collaborative Filtering</h3>
+          <p>Finds books loved by readers with the same taste as you, using a 706-book pivot table and cosine similarity.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-icon">⚡</div>
+          <h3>Instant Results</h3>
+          <p>Debounced autocomplete, keyboard navigation, and sub-second recommendation lookup.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ── FOOTER ─────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Built with Flask &amp; scikit-learn &nbsp;·&nbsp; Data: Book-Crossing Dataset &nbsp;·&nbsp; BookMind &copy; 2024</p>
+  </footer>
+
+  <!-- ── CARD TEMPLATE ─────────────────────────────────── -->
+  <template id="book-card-template">
+    <article class="book-card" role="listitem">
+      <div class="card-image-wrapper">
+        <img class="card-image" src="" alt="" loading="lazy"/>
+        <div class="card-image-fallback" aria-hidden="true">📖</div>
+        <div class="card-overlay">
+          <span class="card-score-badge">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+            <span class="card-score"></span>% match
+          </span>
+        </div>
+      </div>
+      <div class="card-body">
+        <h3 class="card-title"></h3>
+        <p class="card-author"></p>
+        <div class="card-bar"><div class="card-bar-fill"></div></div>
+      </div>
+    </article>
+  </template>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

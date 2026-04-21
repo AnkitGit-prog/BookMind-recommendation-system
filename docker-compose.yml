@@ -1,0 +1,15 @@
+version: "3.9"
+
+services:
+  bookmind:
+    build: .
+    container_name: bookmind-app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=bookmind-secret-change-in-prod
+    volumes:
+      # Mount model directory so you can update pkl files without rebuilding
+      - ./model:/app/model:ro
+    restart: unless-stopped
