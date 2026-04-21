@@ -10,14 +10,9 @@ venv/
 env/
 ENV/
 
-# ─── Large Model Files (Git LFS recommended) ───────────────────
-# Ye files bahut badi hain — Git LFS use karo ya locally rakhna
-model/books copy.pkl
-model/pt copy.pkl
-model/similarity_scores copy.pkl
-
-# Agar chote pkl files bhi skip karne hain:
-# model/*.pkl
+# ─── Large Model Files — Tracked via Git LFS ─────────────────
+# Git LFS handle kar raha hai in files ko (see .gitattributes)
+# model/*.pkl  ← LFS tracked, not ignored
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
