@@ -35,5 +35,5 @@ ENV SECRET_KEY=bookmind-secret-change-in-prod
 # Expose port
 EXPOSE 5000
 
-# Run with Gunicorn (production WSGI server)
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "app:app"]
+# Run with Gunicorn (production WSGI server) - 1 worker + preload to save memory
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "2", "--preload", "--timeout", "120", "app:app"]
